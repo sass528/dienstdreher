@@ -6,173 +6,453 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DienstDreher – Schichtmanagement</title>
 <style>
+:root {
+  --navy:#122442;
+  --blue:#3478e5;
+  --blue-light:#eaf2ff;
+  --bg:#f4f7fc;
+  --text:#172943;
+  --muted:#8290a5;
+  --border:#e9eef5;
+  --green:#16865a;
+  --red:#d64d58;
+}
 *{box-sizing:border-box}
-body{margin:0;font-family:Inter,Arial,sans-serif;background:#f4f6fb;color:#17233d}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif}
 button,input,select{font:inherit}
+button{cursor:pointer}
 .layout{display:flex;min-height:100vh}
-aside{width:235px;background:#101d36;color:white;padding:25px 16px;flex-shrink:0}
-.logo{font-size:23px;font-weight:800;margin:8px 10px 35px}
-.logo span{color:#61a5ff}
-nav button{display:block;width:100%;padding:14px;border:0;border-radius:10px;background:none;color:#c5d1e4;text-align:left;margin:5px 0;cursor:pointer}
-nav button.active,nav button:hover{background:#263b60;color:white}
-main{flex:1;padding:35px;min-width:0}
+aside{width:245px;background:var(--navy);color:white;padding:28px 17px;flex-shrink:0;display:flex;flex-direction:column}
+.logo{font-size:23px;font-weight:850;letter-spacing:-.8px;padding:5px 10px 35px}
+.logo span{color:#65a4ff}
+.nav-label{font-size:10px;color:#8091ae;font-weight:800;letter-spacing:1.5px;padding:12px 12px 8px}
+nav button{display:flex;align-items:center;gap:12px;width:100%;border:0;background:transparent;color:#c0cee2;padding:13px 14px;border-radius:10px;text-align:left;margin:3px 0;font-size:14px;transition:.2s}
+nav button:hover,nav button.active{background:#263e64;color:white}
+.sidebar-bottom{margin-top:auto;padding:16px 10px 0;color:#8fa1bd;font-size:12px;line-height:1.7}
+main{flex:1;min-width:0;padding:32px 38px}
 header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:28px}
-h1{font-size:27px;margin:0 0 7px}
-.sub{color:#77849b;font-size:14px}
-button.primary{background:#2868dc;color:white;border:0;padding:12px 18px;border-radius:9px;cursor:pointer;font-weight:700}
-button.secondary{background:#eaf0fc;color:#2868dc;border:0;padding:9px 13px;border-radius:8px;cursor:pointer}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:25px}
-.card{background:white;border-radius:14px;padding:20px;box-shadow:0 3px 15px #1b31500a}
-.stat strong{display:block;font-size:27px;margin-top:12px}
-.stat small{color:#7c899e}
-.panel{background:white;border-radius:14px;padding:22px;margin-bottom:20px;box-shadow:0 3px 15px #1b31500a}
-.panel h2{font-size:18px;margin:0 0 18px}
+h1{font-size:27px;letter-spacing:-.7px;margin:0 0 6px}
+h2{font-size:17px;margin:0 0 17px}
+.sub{color:var(--muted);font-size:13px}
+.primary,.secondary,.danger{border:0;border-radius:9px;padding:11px 16px;font-weight:700;font-size:13px;transition:.2s}
+.primary{background:var(--blue);color:white;box-shadow:0 4px 12px #3478e526}
+.primary:hover{background:#2365cd}
+.secondary{background:var(--blue-light);color:var(--blue)}
+.danger{background:#fff0f0;color:var(--red)}
+.small{padding:7px 10px;font-size:12px}
+.page{display:none}
+.page.active{display:block;animation:appear .2s ease}
+@keyframes appear{from{opacity:.5;transform:translateY(4px)}to{opacity:1;transform:none}}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-bottom:23px}
+.card,.panel{background:white;border:1px solid #edf1f7;border-radius:15px;box-shadow:0 4px 18px #17345a08}
+.card{padding:19px}
+.stat-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}
+.stat-icon{width:35px;height:35px;border-radius:10px;background:var(--blue-light);color:var(--blue);display:grid;place-items:center;font-size:17px}
+.stat strong{display:block;font-size:29px;letter-spacing:-1px;margin-top:13px}
+.stat small{color:var(--muted);font-size:11px}
+.panel{padding:22px;margin-bottom:19px}
+.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}
+.panel-head h2{margin:0}
+.grid-two{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
 table{width:100%;border-collapse:collapse}
-th,td{text-align:left;padding:14px 9px;border-bottom:1px solid #edf0f5;font-size:14px}
-th{color:#8190a5;font-size:12px}
-.tag{padding:5px 9px;border-radius:20px;background:#eaf5ef;color:#23804b;font-size:12px}
+th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--border);font-size:13px}
+th{color:var(--muted);font-size:11px;font-weight:700}
+tbody tr:last-child td{border-bottom:0}
+.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:#e9f7ef;color:var(--green);font-size:11px;font-weight:700}
 .tag.pending{background:#fff4df;color:#a66a00}
-.page{display:none}.page.active{display:block}
-input,select{width:100%;padding:12px;border:1px solid #dce2ec;border-radius:8px;margin:7px 0 15px;background:white}
-label{font-size:13px;font-weight:700}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.employee{padding:14px 0;border-bottom:1px solid #edf0f5;display:flex;justify-content:space-between}
-.pricegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.price{font-size:30px;font-weight:800;margin:15px 0}
-.price span{font-size:13px;color:#8290a4;font-weight:400}
-.feature{padding:8px 0;color:#59677e;font-size:14px}
-.notice{font-size:12px;color:#8793a6;line-height:1.5}
-@media(max-width:750px){.layout{display:block}aside{width:100%;padding:12px}.logo{margin:5px 8px 12px}nav{display:flex;overflow-x:auto}nav button{white-space:nowrap;width:auto;margin:0 3px;padding:10px}main{padding:20px 14px}.stats{grid-template-columns:1fr 1fr}.pricegrid{grid-template-columns:1fr}.formgrid{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}table{min-width:550px}.panel{overflow-x:auto}}
+.tag.cancelled{background:#fff0f0;color:var(--red)}
+.page-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:15px}
+.page-tools input,.page-tools select{max-width:230px;margin:0}
+input,select{width:100%;padding:11px 12px;border:1px solid #dfe6f0;border-radius:8px;background:white;color:var(--text);outline:none;margin:7px 0 15px}
+input:focus,select:focus{border-color:var(--blue);box-shadow:0 0 0 3px #3478e51a}
+label{font-size:12px;font-weight:700;color:#52627a}
+.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.form-actions{display:flex;gap:9px;flex-wrap:wrap}
+.employee-row{display:flex;align-items:center;gap:13px;padding:14px 0;border-bottom:1px solid var(--border)}
+.employee-row:last-child{border:0}
+.avatar{width:42px;height:42px;flex-shrink:0;border-radius:50%;background:#e5efff;color:#2766c5;display:grid;place-items:center;font-size:13px;font-weight:800;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.employee-info{flex:1;min-width:0}
+.employee-info b{font-size:13px}
+.employee-info small{display:block;color:var(--muted);font-size:11px;margin-top:4px}
+.employee-actions{display:flex;gap:6px;flex-wrap:wrap}
+.empty{padding:28px;text-align:center;color:var(--muted);font-size:13px}
+.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.day{background:#fff;border:1px solid var(--border);border-radius:11px;padding:11px 8px;min-height:150px}
+.day-head{font-size:11px;color:var(--muted);margin-bottom:10px}
+.day-number{font-weight:800;color:var(--text);font-size:17px}
+.event{background:var(--blue-light);border-left:3px solid var(--blue);padding:7px;margin:6px 0;border-radius:5px;font-size:10px;line-height:1.5;overflow-wrap:anywhere}
+.pricegrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.price{font-size:32px;font-weight:850;margin:15px 0}
+.price span{font-size:12px;color:var(--muted);font-weight:400}
+.feature{padding:8px 0;color:#596a82;font-size:13px}
+.highlight{border:2px solid var(--blue)}
+.notice{font-size:11px;color:var(--muted);line-height:1.6}
+.week-label{font-size:12px;color:var(--muted);margin-bottom:12px}
+hr{border:0;border-top:1px solid var(--border);margin:18px 0}
+.mobile-menu{display:none}
+@media(max-width:1000px){
+ main{padding:25px 20px}
+ .stats{grid-template-columns:repeat(2,1fr)}
+ .grid-two{grid-template-columns:1fr}
+ .calendar{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media(max-width:700px){
+ .layout{display:block}
+ aside{width:100%;padding:13px}
+ .logo{padding:5px 8px 13px}
+ .nav-label,.sidebar-bottom{display:none}
+ nav{display:flex;overflow-x:auto;gap:3px}
+ nav button{white-space:nowrap;width:auto;margin:0;padding:10px;font-size:12px}
+ main{padding:21px 13px}
+ header{align-items:flex-start;flex-direction:column}
+ header .primary{width:100%}
+ .stats{gap:9px}
+ .card{padding:14px}
+ .stat strong{font-size:24px}
+ .panel{padding:16px}
+ .pricegrid{grid-template-columns:1fr}
+ .calendar{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .formgrid{grid-template-columns:1fr}
+ .table-wrap{overflow-x:auto}
+ table{min-width:600px}
+}
 </style>
 </head>
 <body>
 <div class="layout">
 <aside>
-<div class="logo">Dienst<span>Dreher.</span></div>
-<nav>
-<button class="active" data-page="dashboard">⌂ Übersicht</button>
-<button data-page="shifts">▦ Schichten</button>
-<button data-page="requests">⇄ Tauschanfragen</button>
-<button data-page="team">♙ Mitarbeiter</button>
-<button data-page="pricing">€ Preise</button>
-</nav>
+  <div class="logo">Dienst<span>Dreher.</span></div>
+  <div class="nav-label">ARBEITSPLATZ</div>
+  <nav>
+    <button class="active" data-page="dashboard">⌂ Übersicht</button>
+    <button data-page="shifts">▦ Schichten</button>
+    <button data-page="calendar">▦ Kalender</button>
+    <button data-page="requests">⇄ Tauschanfragen</button>
+    <button data-page="team">♙ Mitarbeiter</button>
+    <button data-page="locations">⌖ Standorte</button>
+    <button data-page="pricing">€ Preise</button>
+  </nav>
+  <div class="sidebar-bottom">DienstDreher<br>Schichttausch ohne WhatsApp-Chaos.</div>
 </aside>
+
 <main>
 <header>
-<div><h1 id="heading">Übersicht</h1><div class="sub">Willkommen bei DienstDreher.</div></div>
-<button class="primary" onclick="openForm()">+ Schicht erstellen</button>
+  <div>
+    <h1 id="heading">Übersicht</h1>
+    <div class="sub" id="subtitle">Dein Unternehmen auf einen Blick.</div>
+  </div>
+  <button class="primary" onclick="openShiftForm()">＋ Schicht erstellen</button>
 </header>
 
 <section id="dashboard" class="page active">
-<div class="stats">
-<div class="card stat"><small>Schichten diese Woche</small><strong id="statShifts">3</strong></div>
-<div class="card stat"><small>Offene Tauschanfragen</small><strong id="statOpen">1</strong></div>
-<div class="card stat"><small>Mitarbeiter</small><strong id="statTeam">4</strong></div>
-<div class="card stat"><small>Genehmigte Tausche</small><strong id="statDone">0</strong></div>
-</div>
-<div class="panel"><h2>Die nächsten Schichten</h2><div id="dashShifts"></div></div>
-<div class="panel"><h2>Das kann DienstDreher</h2><p class="sub">Schichtplanung, Mitarbeiterverwaltung und Schichttausch – zentral an einem Ort statt in unübersichtlichen Chatgruppen.</p></div>
+  <div class="stats">
+    <div class="card stat"><div class="stat-top">Schichten <span class="stat-icon">▦</span></div><strong id="statShifts">0</strong><small>Insgesamt geplant</small></div>
+    <div class="card stat"><div class="stat-top">Offene Anfragen <span class="stat-icon">⇄</span></div><strong id="statOpen">0</strong><small>Warten auf Bearbeitung</small></div>
+    <div class="card stat"><div class="stat-top">Mitarbeiter <span class="stat-icon">♙</span></div><strong id="statTeam">0</strong><small>Im Team eingetragen</small></div>
+    <div class="card stat"><div class="stat-top">Standorte <span class="stat-icon">⌖</span></div><strong id="statLocations">0</strong><small>Verwaltete Standorte</small></div>
+  </div>
+  <div class="grid-two">
+    <div class="panel">
+      <div class="panel-head"><h2>Die nächsten Schichten</h2><button class="secondary small" onclick="showPage('shifts')">Alle ansehen</button></div>
+      <div id="dashShifts"></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Offene Tauschanfragen</h2><button class="secondary small" onclick="showPage('requests')">Ansehen</button></div>
+      <div id="dashRequests"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h2>Willkommen bei DienstDreher.</h2>
+    <p class="sub">Organisiere Schichten, verwalte dein Team und bearbeite Tauschanfragen zentral an einem Ort. Schluss mit unübersichtlichen Chatgruppen.</p>
+  </div>
 </section>
 
 <section id="shifts" class="page">
-<div class="panel">
-<h2>Schichtplan</h2>
-<div id="shiftList"></div>
-</div>
-<div class="panel" id="shiftForm" style="display:none">
-<h2>Neue Schicht erstellen</h2>
-<div class="formgrid">
-<div><label>Mitarbeiter</label><input id="employeeName" placeholder="Name"></div>
-<div><label>Datum</label><input id="shiftDate" type="date"></div>
-<div><label>Beginn</label><input id="startTime" type="time" value="09:00"></div>
-<div><label>Ende</label><input id="endTime" type="time" value="17:00"></div>
-<div><label>Position</label><input id="shiftRole" placeholder="z. B. Service"></div>
-</div>
-<button class="primary" onclick="addShift()">Schicht speichern</button>
-<button class="secondary" onclick="closeForm()">Abbrechen</button>
-</div>
+  <div class="panel">
+    <div class="panel-head"><h2>Schichtplan</h2><button class="primary small" onclick="openShiftForm()">＋ Neue Schicht</button></div>
+    <div class="page-tools">
+      <input id="shiftSearch" placeholder="Mitarbeiter suchen..." oninput="renderShifts()">
+      <select id="shiftLocationFilter" onchange="renderShifts()"><option value="">Alle Standorte</option></select>
+    </div>
+    <div class="table-wrap" id="shiftList"></div>
+  </div>
+  <div class="panel" id="shiftForm" style="display:none">
+    <h2 id="shiftFormTitle">Neue Schicht erstellen</h2>
+    <input type="hidden" id="editShiftId">
+    <div class="formgrid">
+      <div><label>Mitarbeiter</label><select id="shiftEmployee"></select></div>
+      <div><label>Standort</label><select id="shiftLocation"></select></div>
+      <div><label>Datum</label><input id="shiftDate" type="date"></div>
+      <div><label>Position</label><input id="shiftRole" placeholder="z. B. Service"></div>
+      <div><label>Beginn</label><input id="startTime" type="time" value="09:00"></div>
+      <div><label>Ende</label><input id="endTime" type="time" value="17:00"></div>
+    </div>
+    <div class="form-actions">
+      <button class="primary" onclick="saveShift()">Schicht speichern</button>
+      <button class="secondary" onclick="closeShiftForm()">Abbrechen</button>
+    </div>
+  </div>
+</section>
+
+<section id="calendar" class="page">
+  <div class="panel">
+    <div class="panel-head"><h2>Wochenkalender</h2><div class="form-actions"><button class="secondary small" onclick="changeWeek(-7)">← Zurück</button><button class="secondary small" onclick="changeWeek(7)">Weiter →</button></div></div>
+    <div class="week-label" id="weekLabel"></div>
+    <div class="calendar" id="calendarGrid"></div>
+  </div>
 </section>
 
 <section id="requests" class="page">
-<div class="panel"><h2>Tauschanfragen</h2><div id="requestList"></div></div>
+  <div class="panel">
+    <h2>Tauschanfragen</h2>
+    <p class="sub">Hier kannst du Anfragen deines Teams verwalten.</p>
+    <div id="requestList"></div>
+  </div>
 </section>
 
 <section id="team" class="page">
-<div class="panel">
-<h2>Dein Team</h2>
-<div id="teamList"></div>
-<label>Neuen Mitarbeiter hinzufügen</label>
-<input id="newEmployee" placeholder="Name des Mitarbeiters">
-<button class="primary" onclick="addEmployee()">Mitarbeiter hinzufügen</button>
-</div>
+  <div class="panel">
+    <div class="panel-head"><h2>Dein Team</h2><span class="tag" id="teamCount">0 Mitarbeiter</span></div>
+    <div id="teamList"></div>
+  </div>
+  <div class="panel" id="employeeForm">
+    <h2 id="employeeFormTitle">Mitarbeiter hinzufügen</h2>
+    <input type="hidden" id="editEmployeeId">
+    <div class="formgrid">
+      <div><label>Vollständiger Name</label><input id="newEmployee" placeholder="Vor- und Nachname"></div>
+      <div><label>Position</label><input id="employeeRole" placeholder="z. B. Serviceleitung"></div>
+      <div><label>Standort</label><select id="employeeLocation"></select></div>
+      <div><label>Profilbild-URL (optional)</label><input id="employeePhoto" placeholder="https://..."></div>
+    </div>
+    <div class="form-actions">
+      <button class="primary" onclick="saveEmployee()">Mitarbeiter speichern</button>
+      <button class="secondary" onclick="resetEmployeeForm()">Zurücksetzen</button>
+    </div>
+    <p class="notice">In dieser Demo wird ein optionaler Bildlink verwendet. Bitte keine echten Mitarbeiterdaten oder Fotos eintragen.</p>
+  </div>
+</section>
+
+<section id="locations" class="page">
+  <div class="panel">
+    <h2>Standortverwaltung</h2>
+    <div id="locationList"></div>
+    <hr>
+    <label>Neuen Standort hinzufügen</label>
+    <input id="newLocation" placeholder="z. B. Filiale Innenstadt">
+    <button class="primary" onclick="addLocation()">Standort hinzufügen</button>
+  </div>
 </section>
 
 <section id="pricing" class="page">
-<h2>Faire Preise für jedes Unternehmen</h2>
-<p class="sub">30 Tage kostenlos testen. Danach monatlich kündbar.</p>
-<div class="pricegrid">
-<div class="panel"><h2>Starter</h2><div class="price">39 € <span>/ Monat</span></div><div class="feature">✓ Schichtplanung</div><div class="feature">✓ Bis zu 5 Mitarbeiter</div><div class="feature">✓ Tauschanfragen</div><button class="primary" onclick="alert('Die Testphase ist in dieser Demo noch nicht mit einer Zahlungsfunktion verbunden.')">Kostenlos testen</button></div>
-<div class="panel" style="border:2px solid #2868dc"><h2>Business</h2><div class="price">79 € <span>/ Monat</span></div><div class="feature">✓ Alle Starter-Funktionen</div><div class="feature">✓ Bis zu 25 Mitarbeiter</div><div class="feature">✓ Teamverwaltung</div><button class="primary" onclick="alert('Die Testphase ist in dieser Demo noch nicht mit einer Zahlungsfunktion verbunden.')">Kostenlos testen</button></div>
-<div class="panel"><h2>Enterprise</h2><div class="price">149 € <span>/ Monat</span></div><div class="feature">✓ Alle Business-Funktionen</div><div class="feature">✓ Größere Teams</div><div class="feature">✓ Erweiterte Verwaltung</div><button class="primary" onclick="alert('Die Testphase ist in dieser Demo noch nicht mit einer Zahlungsfunktion verbunden.')">Kostenlos testen</button></div>
-</div>
-<p class="notice">Preise sind Demo-Angaben. Registrierung, echte Testabos, Zahlungen und Kündigungen müssen vor einem kommerziellen Start noch eingerichtet werden.</p>
+  <h2>Tarife für jedes Unternehmen</h2>
+  <p class="sub">Die folgenden Preise sind zunächst nur ein Konzept.</p>
+  <div class="pricegrid">
+    <div class="panel"><h2>Starter</h2><div class="price">39 € <span>/ Monat</span></div><div class="feature">✓ Schichtplanung</div><div class="feature">✓ Bis zu 5 Mitarbeiter</div><div class="feature">✓ Tauschanfragen</div><div class="feature">✓ Übersicht</div><button class="secondary" onclick="demoNotice()">Tarif auswählen</button></div>
+    <div class="panel highlight"><h2>Business</h2><span class="tag">Beliebt</span><div class="price">79 € <span>/ Monat</span></div><div class="feature">✓ Alle Starter-Funktionen</div><div class="feature">✓ Bis zu 25 Mitarbeiter</div><div class="feature">✓ Teamverwaltung</div><div class="feature">✓ Kalender</div><button class="primary" onclick="demoNotice()">Tarif auswählen</button></div>
+    <div class="panel"><h2>Enterprise</h2><div class="price">149 € <span>/ Monat</span></div><div class="feature">✓ Alle Business-Funktionen</div><div class="feature">✓ Größere Teams</div><div class="feature">✓ Mehrere Standorte</div><div class="feature">✓ Erweiterte Verwaltung</div><button class="secondary" onclick="demoNotice()">Tarif auswählen</button></div>
+  </div>
+  <p class="notice">Preise sind unverbindliche Demo-Angaben. Registrierung, echte Testabos, Zahlungen und Kündigungen sind noch nicht integriert.</p>
 </section>
 </main>
 </div>
 
 <script>
-let shifts=[
-{name:"Emma",date:"2026-11-24",start:"09:00",end:"17:00",role:"Service"},
-{name:"Lukas",date:"2026-11-24",start:"12:00",end:"20:00",role:"Kasse"},
-{name:"Sophie",date:"2026-11-25",start:"08:00",end:"16:00",role:"Verkauf"}
-];
-let employees=["Emma","Lukas","Sophie","Noah"];
-let requests=[{name:"Emma",detail:"Möchte ihre Schicht am Dienstag tauschen",status:"Offen"}];
-let approved=0;
-const $=id=>document.getElementById(id);
+const $ = id => document.getElementById(id);
+const today = new Date();
+const dateString = d => {
+  const x = new Date(d);
+  return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0");
+};
+const addDays = (d,n) => {let x=new Date(d);x.setDate(x.getDate()+n);return x};
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const escapeHTML = s => String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const initials = name => String(name).trim().split(/\s+/).slice(0,2).map(x=>x[0]||"").join("").toUpperCase();
+const prettyDate = d => new Date(d+"T12:00:00").toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric"});
+const todayText = today.toLocaleDateString("de-DE",{weekday:"long",day:"numeric",month:"long"});
+
+const sampleData = () => ({
+ employees:[
+  {id:"e1",name:"Emma",role:"Service",location:"Innenstadt",photo:""},
+  {id:"e2",name:"Lukas",role:"Kasse",location:"Innenstadt",photo:""},
+  {id:"e3",name:"Sophie",role:"Verkauf",location:"Nord",photo:""},
+  {id:"e4",name:"Noah",role:"Teamleitung",location:"Nord",photo:""}
+ ],
+ locations:["Innenstadt","Nord"],
+ shifts:[
+  {id:"s1",employeeId:"e1",date:dateString(addDays(today,1)),start:"09:00",end:"17:00",role:"Service",location:"Innenstadt"},
+  {id:"s2",employeeId:"e2",date:dateString(addDays(today,1)),start:"12:00",end:"20:00",role:"Kasse",location:"Innenstadt"},
+  {id:"s3",employeeId:"e3",date:dateString(addDays(today,2)),start:"08:00",end:"16:00",role:"Verkauf",location:"Nord"}
+ ],
+ requests:[
+  {id:"r1",employeeId:"e1",detail:"Möchte eine Schicht tauschen",date:dateString(addDays(today,1)),status:"Offen"}
+ ]
+});
+
+let data;
+try {
+ const saved=localStorage.getItem("dienstdreher_demo_v2");
+ data=saved?JSON.parse(saved):sampleData();
+ if(!data.employees||!data.shifts||!data.requests||!data.locations) data=sampleData();
+} catch(e){data=sampleData()}
+
+let calendarStart = addDays(today,-((today.getDay()+6)%7));
+
+function saveData(){
+ try{localStorage.setItem("dienstdreher_demo_v2",JSON.stringify(data))}
+ catch(e){alert("Die Browser-Speicherung ist nicht verfügbar.")}
+}
+function employee(id){return data.employees.find(e=>e.id===id)}
+function employeeName(id){return employee(id)?.name||"Unbekannt"}
 function showPage(page){
-document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-$(page).classList.add("active");
-document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
-$("heading").textContent={dashboard:"Übersicht",shifts:"Schichtplanung",requests:"Tauschanfragen",team:"Mitarbeiter",pricing:"Preise"}[page];
+ document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+ $(page).classList.add("active");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===page));
+ const names={dashboard:"Übersicht",shifts:"Schichtplanung",calendar:"Kalender",requests:"Tauschanfragen",team:"Mitarbeiter",locations:"Standorte",pricing:"Preise"};
+ $("heading").textContent=names[page];
+ $("subtitle").textContent=page==="dashboard"?"Dein Unternehmen auf einen Blick.":page==="calendar"?"Behalte alle Schichten im Überblick.":"Verwalte "+names[page].toLowerCase()+" an einem Ort.";
+ if(page==="shifts")renderShifts();
+ if(page==="calendar")renderCalendar();
+ if(page==="team")renderTeam();
+ if(page==="locations")renderLocations();
+ if(page==="requests")renderRequests();
 }
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>showPage(b.dataset.page));
-function openForm(){showPage("shifts");$("shiftForm").style.display="block"}
-function closeForm(){$("shiftForm").style.display="none"}
-function addShift(){
-let name=$("employeeName").value.trim(),date=$("shiftDate").value,start=$("startTime").value,end=$("endTime").value,role=$("shiftRole").value.trim();
-if(!name||!date||!start||!end){alert("Bitte fülle Name, Datum und Uhrzeiten aus.");return}
-if(end<=start){alert("Die Endzeit muss nach der Startzeit liegen.");return}
-shifts.push({name,date,start,end,role:role||"Allgemein"});
-if(!employees.includes(name))employees.push(name);
-["employeeName","shiftDate","shiftRole"].forEach(id=>$(id).value="");
-closeForm();render();
+document.querySelectorAll("nav button").forEach(b=>b.addEventListener("click",()=>showPage(b.dataset.page)));
+
+function fillSelect(id,items,first){
+ const el=$(id); if(!el)return;
+ const old=el.value;
+ el.innerHTML=(first?'<option value="">'+escapeHTML(first)+'</option>':"")+items.map(x=>`<option value="${escapeHTML(x.value)}">${escapeHTML(x.label)}</option>`).join("");
+ if(items.some(x=>x.value===old))el.value=old;
 }
-function addEmployee(){
-let n=$("newEmployee").value.trim();
-if(!n)return;
-if(employees.includes(n)){alert("Dieser Mitarbeiter ist bereits im Team.");return}
-employees.push(n);$("newEmployee").value="";render();
+function fillFormSelects(){
+ fillSelect("shiftEmployee",data.employees.map(e=>({value:e.id,label:e.name})),"Mitarbeiter auswählen");
+ fillSelect("shiftLocation",data.locations.map(x=>({value:x,label:x})),"Standort auswählen");
+ fillSelect("employeeLocation",data.locations.map(x=>({value:x,label:x})),"Standort auswählen");
+ fillSelect("shiftLocationFilter",data.locations.map(x=>({value:x,label:x})),"Alle Standorte");
 }
-function requestSwap(i){
-requests.push({name:shifts[i].name,detail:"Möchte die Schicht am "+shifts[i].date+" tauschen",status:"Offen"});
-render();alert("Tauschanfrage erstellt!");
+
+function openShiftForm(id){
+ showPage("shifts");
+ fillFormSelects();
+ $("shiftForm").style.display="block";
+ $("shiftFormTitle").textContent=id?"Schicht bearbeiten":"Neue Schicht erstellen";
+ const s=data.shifts.find(x=>x.id===id);
+ $("editShiftId").value=s?.id||"";
+ $("shiftEmployee").value=s?.employeeId||"";
+ $("shiftLocation").value=s?.location||"";
+ $("shiftDate").value=s?.date||dateString(today);
+ $("shiftRole").value=s?.role||"";
+ $("startTime").value=s?.start||"09:00";
+ $("endTime").value=s?.end||"17:00";
+ $("shiftForm").scrollIntoView({behavior:"smooth",block:"start"});
 }
-function approve(i){requests[i].status="Genehmigt";approved++;render()}
-function render(){
-let rows=shifts.map((s,i)=>`<tr><td>${s.name}</td><td>${s.date}</td><td>${s.start}–${s.end}</td><td>${s.role}</td><td><button class="secondary" onclick="requestSwap(${i})">Tausch anfragen</button></td></tr>`).join("");
-let table=`<table><tr><th>Mitarbeiter</th><th>Datum</th><th>Uhrzeit</th><th>Position</th><th>Aktion</th></tr>${rows||"<tr><td colspan='5'>Noch keine Schichten.</td></tr>"}</table>`;
-$("shiftList").innerHTML=table;
-$("dashShifts").innerHTML=shifts.slice(0,4).map(s=>`<div class="employee"><span><b>${s.name}</b> · ${s.role}</span><span>${s.date} · ${s.start}</span></div>`).join("")||"Keine Schichten geplant.";
-$("requestList").innerHTML=requests.map((r,i)=>`<div class="employee"><div><b>${r.name}</b><br><span class="sub">${r.detail}</span></div><div>${r.status==="Offen"?`<button class="primary" onclick="approve(${i})">Genehmigen</button>`:`<span class="tag">${r.status}</span>`}</div></div>`).join("")||"Keine Anfragen vorhanden.";
-$("teamList").innerHTML=employees.map(n=>`<div class="employee"><b>${n}</b><span class="tag">Aktiv</span></div>`).join("");
-$("statShifts").textContent=shifts.length;
-$("statOpen").textContent=requests.filter(r=>r.status==="Offen").length;
-$("statTeam").textContent=employees.length;
-$("statDone").textContent=approved;
+function closeShiftForm(){$("shiftForm").style.display="none"}
+function saveShift(){
+ const id=$("editShiftId").value,employeeId=$("shiftEmployee").value,date=$("shiftDate").value,start=$("startTime").value,end=$("endTime").value,role=$("shiftRole").value.trim(),location=$("shiftLocation").value;
+ if(!employeeId||!date||!start||!end||!location){alert("Bitte fülle alle Pflichtfelder aus.");return}
+ if(end<=start){alert("Die Endzeit muss nach der Startzeit liegen.");return}
+ const item={id:id||uid(),employeeId,date,start,end,role:role||"Allgemein",location};
+ const index=data.shifts.findIndex(s=>s.id===id);
+ if(index>=0)data.shifts[index]=item;else data.shifts.push(item);
+ saveData();closeShiftForm();renderAll();
 }
-render();
+function deleteShift(id){
+ if(!confirm("Möchtest du diese Schicht wirklich löschen?"))return;
+ data.shifts=data.shifts.filter(s=>s.id!==id);saveData();renderAll();
+}
+function requestSwap(id){
+ const s=data.shifts.find(x=>x.id===id);
+ if(!s)return;
+ data.requests.push({id:uid(),employeeId:s.employeeId,detail:"Möchte die Schicht am "+prettyDate(s.date)+" tauschen",date:s.date,status:"Offen"});
+ saveData();renderAll();alert("Demo-Tauschanfrage erstellt.");
+}
+function renderShifts(){
+ if(!$("shiftList"))return;
+ const query=($("shiftSearch")?.value||"").toLowerCase();
+ const loc=$("shiftLocationFilter")?.value||"";
+ const list=data.shifts.filter(s=>employeeName(s.employeeId).toLowerCase().includes(query)&&(!loc||s.location===loc)).sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
+ $("shiftList").innerHTML=list.length?`<table><thead><tr><th>Mitarbeiter</th><th>Datum</th><th>Zeit</th><th>Position</th><th>Standort</th><th>Aktionen</th></tr></thead><tbody>${list.map(s=>`<tr><td><b>${escapeHTML(employeeName(s.employeeId))}</b></td><td>${prettyDate(s.date)}</td><td>${s.start}–${s.end}</td><td>${escapeHTML(s.role)}</td><td>${escapeHTML(s.location)}</td><td><div class="form-actions"><button class="secondary small" onclick="openShiftForm('${s.id}')">Bearbeiten</button><button class="secondary small" onclick="requestSwap('${s.id}')">Tausch</button><button class="danger small" onclick="deleteShift('${s.id}')">Löschen</button></div></td></tr>`).join("")}</tbody></table>`:'<div class="empty">Keine passenden Schichten gefunden.</div>';
+}
+function renderDashboard(){
+ $("statShifts").textContent=data.shifts.length;
+ $("statOpen").textContent=data.requests.filter(r=>r.status==="Offen").length;
+ $("statTeam").textContent=data.employees.length;
+ $("statLocations").textContent=data.locations.length;
+ const upcoming=[...data.shifts].sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start)).slice(0,5);
+ $("dashShifts").innerHTML=upcoming.length?upcoming.map(s=>`<div class="employee-row"><div class="avatar">${escapeHTML(initials(employeeName(s.employeeId)))}</div><div class="employee-info"><b>${escapeHTML(employeeName(s.employeeId))}</b><small>${escapeHTML(s.role)} · ${escapeHTML(s.location)}</small></div><div class="sub">${prettyDate(s.date)}<br>${s.start}–${s.end}</div></div>`).join(""):'<div class="empty">Noch keine Schichten geplant.</div>';
+ const open=data.requests.filter(r=>r.status==="Offen").slice(0,4);
+ $("dashRequests").innerHTML=open.length?open.map(r=>`<div class="employee-row"><div class="avatar">⇄</div><div class="employee-info"><b>${escapeHTML(employeeName(r.employeeId))}</b><small>${escapeHTML(r.detail)}</small></div><span class="tag pending">Offen</span></div>`).join(""):'<div class="empty">Keine offenen Anfragen.</div>';
+}
+function renderRequests(){
+ $("requestList").innerHTML=data.requests.length?[...data.requests].reverse().map(r=>`<div class="employee-row"><div class="avatar">⇄</div><div class="employee-info"><b>${escapeHTML(employeeName(r.employeeId))}</b><small>${escapeHTML(r.detail)} · ${prettyDate(r.date)}</small></div><div class="employee-actions">${r.status==="Offen"?`<button class="primary small" onclick="setRequest('${r.id}','Genehmigt')">Genehmigen</button><button class="danger small" onclick="setRequest('${r.id}','Abgelehnt')">Ablehnen</button>`:`<span class="tag ${r.status==="Abgelehnt"?"cancelled":""}">${escapeHTML(r.status)}</span>`}</div></div>`).join(""):'<div class="empty">Es gibt noch keine Tauschanfragen.</div>';
+}
+function setRequest(id,status){
+ const r=data.requests.find(x=>x.id===id);if(!r)return;
+ r.status=status;saveData();renderAll();
+}
+function renderTeam(){
+ $("teamCount").textContent=data.employees.length+" Mitarbeiter";
+ $("teamList").innerHTML=data.employees.length?data.employees.map(e=>`<div class="employee-row"><div class="avatar">${e.photo?`<img src="${escapeHTML(e.photo)}" alt="">`:escapeHTML(initials(e.name))}</div><div class="employee-info"><b>${escapeHTML(e.name)}</b><small>${escapeHTML(e.role||"Keine Position")} · ${escapeHTML(e.location||"Kein Standort")}</small></div><div class="employee-actions"><button class="secondary small" onclick="editEmployee('${e.id}')">Bearbeiten</button><button class="danger small" onclick="deleteEmployee('${e.id}')">Entfernen</button></div></div>`).join(""):'<div class="empty">Noch keine Mitarbeiter eingetragen.</div>';
+}
+function saveEmployee(){
+ const id=$("editEmployeeId").value,name=$("newEmployee").value.trim(),role=$("employeeRole").value.trim(),location=$("employeeLocation").value,photo=$("employeePhoto").value.trim();
+ if(!name){alert("Bitte gib einen Namen ein.");return}
+ if(!location){alert("Bitte wähle einen Standort aus.");return}
+ const duplicate=data.employees.find(e=>e.name.toLowerCase()===name.toLowerCase()&&e.id!==id);
+ if(duplicate){alert("Dieser Name ist bereits vorhanden.");return}
+ const item={id:id||uid(),name,role,location,photo};
+ const index=data.employees.findIndex(e=>e.id===id);
+ if(index>=0)data.employees[index]=item;else data.employees.push(item);
+ saveData();resetEmployeeForm();renderAll();
+}
+function editEmployee(id){
+ const e=employee(id);if(!e)return;
+ $("editEmployeeId").value=e.id;$("newEmployee").value=e.name;$("employeeRole").value=e.role;$("employeePhoto").value=e.photo||"";
+ fillFormSelects();$("employeeLocation").value=e.location;
+ $("employeeFormTitle").textContent="Mitarbeiter bearbeiten";
+ $("employeeForm").scrollIntoView({behavior:"smooth"});
+}
+function resetEmployeeForm(){
+ ["editEmployeeId","newEmployee","employeeRole","employeePhoto"].forEach(id=>$(id).value="");
+ $("employeeFormTitle").textContent="Mitarbeiter hinzufügen";
+}
+function deleteEmployee(id){
+ if(data.shifts.some(s=>s.employeeId===id)){alert("Dieser Mitarbeiter hat noch Schichten. Lösche oder ändere diese zuerst.");return}
+ if(!confirm("Mitarbeiter wirklich entfernen?"))return;
+ data.employees=data.employees.filter(e=>e.id!==id);
+ data.requests=data.requests.filter(r=>r.employeeId!==id);
+ saveData();renderAll();
+}
+function addLocation(){
+ const name=$("newLocation").value.trim();
+ if(!name)return;
+ if(data.locations.some(x=>x.toLowerCase()===name.toLowerCase())){alert("Dieser Standort existiert bereits.");return}
+ data.locations.push(name);$("newLocation").value="";saveData();renderAll();
+}
+function deleteLocation(name){
+ if(data.employees.some(e=>e.location===name)||data.shifts.some(s=>s.location===name)){alert("Dieser Standort wird noch verwendet. Ändere zuerst die zugehörigen Mitarbeiter und Schichten.");return}
+ if(!confirm("Standort wirklich entfernen?"))return;
+ data.locations=data.locations.filter(x=>x!==name);saveData();renderAll();
+}
+function renderLocations(){
+ $("locationList").innerHTML=data.locations.length?data.locations.map(name=>`<div class="employee-row"><div class="avatar">⌖</div><div class="employee-info"><b>${escapeHTML(name)}</b><small>${data.employees.filter(e=>e.location===name).length} Mitarbeiter · ${data.shifts.filter(s=>s.location===name).length} Schichten</small></div><button class="danger small" onclick="deleteLocation('${name.replace(/'/g,"\\'")}')">Entfernen</button></div>`).join(""):'<div class="empty">Noch keine Standorte.</div>';
+}
+function renderCalendar(){
+ const days=Array.from({length:7},(_,i)=>addDays(calendarStart,i));
+ $("weekLabel").textContent=days[0].toLocaleDateString("de-DE",{day:"numeric",month:"long"})+" – "+days[6].toLocaleDateString("de-DE",{day:"numeric",month:"long",year:"numeric"});
+ $("calendarGrid").innerHTML=days.map(d=>{
+  const key=dateString(d),items=data.shifts.filter(s=>s.date===key).sort((a,b)=>a.start.localeCompare(b.start));
+  return `<div class="day"><div class="day-head">${d.toLocaleDateString("de-DE",{weekday:"short"})}<br><span class="day-number">${d.getDate()}</span></div>${items.map(s=>`<div class="event"><b>${escapeHTML(employeeName(s.employeeId))}</b><br>${s.start}–${s.end}<br>${escapeHTML(s.role)}</div>`).join("")}</div>`;
+ }).join("");
+}
+function changeWeek(n){calendarStart=addDays(calendarStart,n);renderCalendar()}
+function demoNotice(){alert("Das ist aktuell nur eine Design-Demo. Registrierung, Abonnements und Zahlungen sind noch nicht eingerichtet.")}
+function renderAll(){
+ fillFormSelects();renderDashboard();renderShifts();renderRequests();renderTeam();renderLocations();renderCalendar();
+}
+renderAll();
+$("subtitle").textContent="Heute ist "+todayText+".";
 </script>
 </body>
 </html>
-
